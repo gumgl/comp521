@@ -1,0 +1,15 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace />
+  <MonoDevelop.Ide.Workbench ActiveDocument="..\..\..\..\git\comp361\Assets\Scripts\Board.cs">
+    <Files>
+      <File FileName="..\..\..\..\git\comp361\Assets\Scripts\Village.cs" Line="1" Column="1" />
+      <File FileName="..\..\..\..\git\comp361\Assets\Scripts\Board.cs" Line="70" Column="18" />
+      <File FileName="..\..\..\..\git\comp361\Assets\Scripts\Config\LandType.cs" Line="3" Column="10" />
+      <File FileName="..\..\..\..\git\comp361\Assets\Scripts\Config\Config.cs" Line="6" Column="27" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

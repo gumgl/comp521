@@ -14,36 +14,37 @@ public class Cannon : MonoBehaviour
 	float angle;
 
 
-	void Start()
+	void Start ()
 	{
-		changeAngle();
-		changeVelocity();
+		changeAngle ();
+		changeVelocity ();
 	}
 
-	void Update()
+	void Update ()
 	{
 		
 	}
 
-	public Bullet shoot()
+	public Bullet shoot ()
 	{
-		Bullet bullet = (Bullet)Instantiate(bulletPrefab, Vector3.zero, Quaternion.identity);
+		Bullet bullet = (Bullet)Instantiate (bulletPrefab, Vector3.zero, Quaternion.identity);
 		bullet.transform.parent = game.transform;
 		bullet.game = game;
+		bullet.curr_pos = transform.localPosition;
 		bullet.transform.localPosition = transform.localPosition;
 		bullet.init_pos = transform.localPosition;
 		bullet.init_velocity = velocity;
 		bullet.init_angle = Mathf.PI - angle; // flip the angle to make it towards the left
 
-		changeAngle();
-		changeVelocity();
+		changeAngle ();
+		changeVelocity ();
 
 		return bullet;
 	}
 	
-	public void changeAngle()
+	public void changeAngle ()
 	{
-		float randomAngle = Random.Range(minAngle, maxAngle); // in radians
+		float randomAngle = game.defaultAngle ? 45 * Mathf.Deg2Rad : Random.Range (minAngle, maxAngle); // in radians
 		/*Vector3 eulerRotation = transform.localRotation.eulerAngles;
 		eulerRotation.z = randomAngle;
 		transform.localRotation = Quaternion.Euler(eulerRotation);*/
@@ -53,9 +54,9 @@ public class Cannon : MonoBehaviour
 		transform.localEulerAngles = eulerRotation;
 	}
 	
-	public void changeVelocity()
+	public void changeVelocity ()
 	{
-		float randomVelocity = Random.Range(minVelocity, maxVelocity);
+		float randomVelocity = Random.Range (minVelocity, maxVelocity);
 		velocity = randomVelocity;
 	}
 }

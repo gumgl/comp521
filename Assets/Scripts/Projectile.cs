@@ -1,55 +1,92 @@
 using UnityEngine;
 using System.Collections;
 
-public class Projectile : MonoBehaviour
+public abstract class Projectile : MonoBehaviour
 {
-	public Game game;
-	public float mass = 1f;
-	public float air_resistance_factor = 0.05f; // in % of velocity^2 relative to air
-	public float init_velocity;
-	public float init_angle; // in radians
-	public Vector2 init_pos;
-	public Vector2 curr_pos;
-	public float init_time;
-	public float prev_time;
+	#region References
+	public Game gameRef;
+	#endregion
+	public float restitutionCoefficient;
+	public float airResistanceFactor; // in % of velocity^2 relative to air
 
 	public void Start ()
 	{
-		init_time = Time.time;
-		prev_time = 0;
+	}
+	public void FixedUpdate ()
+	{
+		moveOnce ();
+		updateProjectile ();
+		collision (gameRef.leftWall);
+		collision (gameRef.rightWall);
+
+	}
+	public abstract void setup (float angle, float velocity, Vector2 pos);
+	public abstract void moveOnce ();
+	public abstract void updateProjectile ();
+	public abstract void collision (Wall wall);
+	public abstract bool offBounds (Vector2 absMin, Vector2 absMax);
+	public void disappear ()
+	{
+		transform.localScale = Vector3.zero;
 	}
 
-	public void Update ()
+	protected Vector2 calcAir (Vector2 velocity, Vector2 wind)
 	{
-		var prev_pos = curr_pos;
-		var t = Time.time - init_time;
-		var dt = Time.time - prev_time;
+		var relativeVelocity = velocity - wind;
 
-		var parabola = calc_parabola (t, init_velocity, init_angle) - calc_parabola (prev_time, init_velocity, init_angle);
-		var wind = new Vector2 (game.windForce, 0) * dt;
-		var displacement = parabola;// + wind;
-		var air_resistance = calc_air (displacement, wind);
+		float slowdownFactor = airResistanceFactor * relativeVelocity.sqrMagnitude;
 
-		curr_pos += displacement - air_resistance;
-		prev_time = t;
-
-		transform.localPosition = curr_pos;
+		return relativeVelocity * airResistanceFactor;
 	}
-	
-	Vector2 calc_parabola (float t, float v, float theta)
+	/// <summary>
+	/// Computes i, the intersection point of lines ab and cd.
+	/// Taken from http://stackoverflow.com/a/1968345
+	/// </summary>
+	/// <returns><c>true</c>, if i was found, <c>false</c> otherwise.</returns>
+	/// <param name="a">The first point of ab.</param>
+	/// <param name="b">The second point of ab.</param>
+	/// <param name="c">The first point of cd.</param>
+	/// <param name="d">The second point of cd.</param>
+	/// <param name="i">The intersection point.</param>
+	static public bool Intersection (Vector2 a, Vector2 b, Vector2 c, Vector2 d, ref Vector2 i)
 	{
-		float dx = t * v * Mathf.Cos (theta);
-		float dy = t * v * Mathf.Sin (theta) - 1f / 2 * game.gravity * Mathf.Pow (t, 2);
-		return new Vector2 (dx, dy);
+		Vector2 s1 = b - a;
+		Vector2 s2 = d - c;
+		
+		var s = (-s1.y * (a.x - c.x) + s1.x * (a.y - c.y)) / (-s2.x * s1.y + s1.x * s2.y);
+		var t = (s2.x * (a.y - c.y) - s2.y * (a.x - c.x)) / (-s2.x * s1.y + s1.x * s2.y);
+		
+		if (s >= 0 && s <= 1 && t >= 0 && t <= 1) { // Collision detected
+			i.x = a.x + (t * s1.x);
+			i.y = a.y + (t * s1.y);
+			return true;
+		} else
+			return false; // No collision
 	}
-
-	Vector2 calc_air (Vector2 velocity, Vector2 wind)
+	/// <summary>
+	/// Maps angles -> 0..PI
+	/// </summary>
+	/// <param name="a">The angle in radians</param>
+	static public float minimize (float a)
 	{
-		var relative_velocity = velocity - wind;
-
-		float slowdown_factor = air_resistance_factor * relative_velocity.sqrMagnitude;
-
-		return relative_velocity * air_resistance_factor;
+		return (a + Mathf.PI) % Mathf.PI;
+	}
+	static public Vector2 further (Vector2 motion, float distance)
+	{
+		return motion.normalized * distance;
+	}
+	static public Vector2 getComponents (float angle, float magnitude)
+	{
+		return new Vector2 (Mathf.Cos (angle), Mathf.Sin (angle)) * magnitude;
+	}
+	/// <summary>Checks if a vector is within the bounds of a rectangle a to b</summary>
+	/// <returns><c>true</c>, if x is in bounds, <c>false</c> otherwise.</returns>
+	/// <param name="min">Bottom-left corner.</param>
+	/// <param name="max">Top-right corner.</param>
+	/// <param name="v">The coordinate.</param>
+	static public bool inBounds (Vector2 min, Vector2 max, Vector2 v)
+	{
+		return (v.x > min.x && v.x < max.x && v.y > min.y && v.y < max.y);
 	}
 }
 

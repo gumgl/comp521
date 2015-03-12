@@ -6,6 +6,7 @@ public class Wall : MonoBehaviour
 	LineRenderer lr;
 	float maxDisplacement = 0.15f; // In % of line segment length
 	public List<Vector2> points;
+	public float length;
 	
 	void Start ()
 	{
@@ -48,5 +49,13 @@ public class Wall : MonoBehaviour
 		for (int i = 0; i < points.Count; i++) {
 			lr.SetPosition (i, points [i]);
 		}
+	}
+	public float getLength ()
+	{
+		float length = 0;
+		for (int i = 0; i < points.Count - 1; i++) { // For all points except the last one
+			length += (points [i + 1] - points [i]).magnitude;
+		}
+		return length;
 	}
 }

@@ -3,16 +3,24 @@ using System.Collections;
 
 public class Cannon : MonoBehaviour
 {
-	public Game game;
-	public Bullet bulletPrefab;
+	#region References
+	public Game gameRef;
+	public Projectile ammoPrefab;
+	#endregion
 	public float minAngle;
 	public float maxAngle;
 	public float minVelocity;
 	public float maxVelocity;
+	public Direction facing;
 
 	float velocity; // velocity at which it fires bullets
-	float angle;
+	float angle; // angle in radians
 
+	public enum Direction
+	{
+		Left,
+		Right
+	}
 
 	void Start ()
 	{
@@ -25,26 +33,25 @@ public class Cannon : MonoBehaviour
 		
 	}
 
-	public Bullet shoot ()
+	public Projectile shoot ()
 	{
-		Bullet bullet = (Bullet)Instantiate (bulletPrefab, Vector3.zero, Quaternion.identity);
-		bullet.transform.parent = game.transform;
-		bullet.game = game;
-		bullet.curr_pos = transform.localPosition;
-		bullet.transform.localPosition = transform.localPosition;
-		bullet.init_pos = transform.localPosition;
-		bullet.init_velocity = velocity;
-		bullet.init_angle = Mathf.PI - angle; // flip the angle to make it towards the left
-
-		changeAngle ();
 		changeVelocity ();
 
-		return bullet;
+		Projectile projectile;
+		projectile = (Projectile)Instantiate (ammoPrefab, Vector3.zero, Quaternion.identity);
+		projectile.transform.parent = gameRef.transform;
+		projectile.gameRef = gameRef;
+		var newAngle = facing == Direction.Left ? Mathf.PI - angle : angle;
+		projectile.setup (newAngle, velocity, transform.position);
+
+		changeAngle ();
+
+		return projectile;
 	}
 	
 	public void changeAngle ()
 	{
-		float randomAngle = game.defaultAngle ? 45 * Mathf.Deg2Rad : Random.Range (minAngle, maxAngle); // in radians
+		float randomAngle = gameRef.defaultAngle ? 45f : Random.Range (minAngle, maxAngle); // in radians
 		/*Vector3 eulerRotation = transform.localRotation.eulerAngles;
 		eulerRotation.z = randomAngle;
 		transform.localRotation = Quaternion.Euler(eulerRotation);*/
@@ -56,7 +63,7 @@ public class Cannon : MonoBehaviour
 	
 	public void changeVelocity ()
 	{
-		float randomVelocity = Random.Range (minVelocity, maxVelocity);
+		float randomVelocity = gameRef.defaultVelocity ? 17f : Random.Range (minVelocity, maxVelocity);
 		velocity = randomVelocity;
 	}
 }

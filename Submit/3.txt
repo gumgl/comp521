@@ -1,8 +1,0 @@
-My strategy:
-We know that the user must go through all 4 rooms. Also we only have 1 projectile per room, and each secondary room takes on projectile to access it. So the last room must also contain the projectile for it.
-Knowing this, I simply shuffle the room sets {A,B,C} to obtain a sequence/order that the player needs to unlock doors.
-I then place the projectile for the 1st secondary room in the start room.
-Same for the projectile for the 2nd secondary room in the 1st secondary room.
-Same for the projectile for the 3rd secondary room in the 2nd secondary room.
-And finally, the projectile to exit the 3rd (and last) secondary room in that room (3rd secondary room).
-This way the player needs to follow this sequence.

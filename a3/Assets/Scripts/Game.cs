@@ -130,8 +130,8 @@ public class Game : MonoBehaviour
 		var pts = GetSpawnPoints ();
 		foreach (SpawnPoint pt in pts) { // Search all the spawn points
 			if (pt != zombie.spawnPoint // If this is not the last seen spawn point
-				&& Vector2.Distance (pt.GetPosition (), zombie.GetPosition ()) < 0.1 * zombie.GetSize ()) { // If we are on a spawn point
-				Debug.Log ("Zombie encounters a spawn point)");
+				&& Vector2.Distance (pt.GetPosition (), zombie.GetPosition ()) < zombie.velocity * Time.deltaTime * 1.5f) { // If we are on a spawn point
+				//Debug.Log ("Zombie encounters a spawn point)");
 				if (Random.Range (0f, 1f) < p) { // Respawing
 					int tries = pts.Count * 2; // To avoid potential infinite loop when all spawn points are occupied (rare case)
 					SpawnPoint newPt;

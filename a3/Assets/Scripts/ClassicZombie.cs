@@ -10,7 +10,7 @@ public class ClassicZombie : Zombie
 	}
 	void Start ()
 	{
-		maxVelocity = v;
+		maxVelocity = 2f * v;
 	}
 //	public override void Move ()
 //	{

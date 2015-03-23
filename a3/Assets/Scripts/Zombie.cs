@@ -8,6 +8,7 @@ public abstract class Zombie : MonoBehaviour
 	public Util.Sense sense;
 	static public float v = 2.0f; // in squares/second
 	static public float size = 1.0f;
+	public float velocity;
 	public float maxVelocity;
 	public int laneID;
 	public int type;
@@ -24,14 +25,37 @@ public abstract class Zombie : MonoBehaviour
 	void Update ()
 	{
 		game.HandleSpawnPoint (this);
+		AdjustVelocity ();
 		Vector2 move = GetMove ();
 		Vector2 newPos = GetPosition () + move;
 		MoveBy (move);
 
 	}
+	public void AdjustVelocity ()
+	{
+		float closest = Mathf.Infinity; // Set value on closest zombie
+		bool found = false;
+		foreach (Zombie other in game.zombies) {
+			if (other != this && other.laneID == laneID) {
+				var pl = CanSee (other.GetPosition ());
+				var distance = Vector2.Distance (GetPosition (), other.GetPosition ());
+				if (pl <= ProximityLevel.Visible && distance < closest && other.velocity < velocity) {
+					Debug.Log ("Found a slower zombie in front of me!");
+					found = true;
+					closest = distance;
+					if (pl == ProximityLevel.Close)
+						velocity = other.velocity; // Simply stay behind them
+					else if (pl == ProximityLevel.Visible)
+						velocity = (maxVelocity + other.velocity) / 2; // Slow down towards them
+				}
+			}
+		}
+		if (!found)
+			velocity = maxVelocity;
+	}
 	public Vector2 GetMove ()
 	{
-		return direction.GetVector () * maxVelocity * Time.deltaTime;
+		return direction.GetVector () * velocity * Time.deltaTime;
 	}
 
 	public bool CanSeeSurvivor (Survivor food)

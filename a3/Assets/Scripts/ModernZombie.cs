@@ -10,7 +10,7 @@ public class ModernZombie : Zombie
 	}
 	void Start ()
 	{
-		maxVelocity = 2 * v;
+		maxVelocity = 4 * v;
 	}
 }
 

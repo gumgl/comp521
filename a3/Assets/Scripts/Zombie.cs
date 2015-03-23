@@ -6,7 +6,7 @@ public abstract class Zombie : MonoBehaviour
 	Game game;
 	public Util.Direction direction;
 	public Util.Sense sense;
-	static public float v = 1.0f; // in squares/second
+	static public float v = 2.0f; // in squares/second
 	static public float size = 1.0f;
 	public float maxVelocity;
 	public int laneID;

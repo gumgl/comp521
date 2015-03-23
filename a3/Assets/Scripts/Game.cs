@@ -24,10 +24,10 @@ public class Game : MonoBehaviour
 	{
 		for (int i=0; i<lanes.Count; i++) {
 			Lane lane = lanes [i];
-			float xMin = lane.min.x + lane.width / 2;
-			float xMax = lane.max.x - lane.width / 2;
-			float yMin = lane.min.y + lane.width / 2;
-			float yMax = lane.max.y - lane.width / 2;
+			float xMin = lane.min.x + lane.width / 2f;
+			float xMax = lane.max.x - lane.width / 2f;
+			float yMin = lane.min.y + lane.width / 2f;
+			float yMax = lane.max.y - lane.width / 2f;
 			var sp1 = new SpawnPoint (); // Bottom-left
 			sp1.SetPosition (new Vector2 (xMin, yMin));
 			sp1.SetDirection (Util.Sense.CW, Util.Direction.Up);

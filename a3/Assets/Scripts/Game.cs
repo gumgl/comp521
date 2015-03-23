@@ -95,7 +95,6 @@ public class Game : MonoBehaviour
 					break;
 				}
 				pos = new Vector2 (x, y);
-				Debug.Log (pos.ToString ());
 				
 			} while (!CanSpawnZombie(pos));
 			
@@ -111,6 +110,7 @@ public class Game : MonoBehaviour
 	}
 	public Zombie SpawnZombie (int type, Vector2 pos)
 	{
+		Debug.Log ("Spawning a zombie at " + pos.ToString ());
 		Zombie recruit = (Zombie)Instantiate (prefabs [type], Vector3.zero, Quaternion.identity);
 		recruit.transform.parent = this.transform;
 		recruit.SetGame (this);
@@ -121,6 +121,7 @@ public class Game : MonoBehaviour
 	}
 	public void DeSpawnZombie (Zombie zombie)
 	{
+		Debug.Log ("Despawning the zombie at " + zombie.GetPosition ().ToString ());
 		zombies.Remove (zombie);
 		Destroy (zombie.gameObject);
 	}
@@ -130,6 +131,7 @@ public class Game : MonoBehaviour
 		foreach (SpawnPoint pt in pts) { // Search all the spawn points
 			if (pt != zombie.spawnPoint // If this is not the last seen spawn point
 				&& Vector2.Distance (pt.GetPosition (), zombie.GetPosition ()) < 0.1 * zombie.GetSize ()) { // If we are on a spawn point
+				Debug.Log ("Zombie encounters a spawn point)");
 				if (Random.Range (0f, 1f) < p) { // Respawing
 					int tries = pts.Count * 2; // To avoid potential infinite loop when all spawn points are occupied (rare case)
 					SpawnPoint newPt;

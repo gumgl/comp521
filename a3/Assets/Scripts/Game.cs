@@ -110,7 +110,7 @@ public class Game : MonoBehaviour
 	}
 	public Zombie SpawnZombie (int type, Vector2 pos)
 	{
-		Debug.Log ("Spawning a zombie at " + pos.ToString ());
+		//Debug.Log ("Spawning a zombie at " + pos.ToString ());
 		Zombie recruit = (Zombie)Instantiate (prefabs [type], Vector3.zero, Quaternion.identity);
 		recruit.transform.parent = this.transform;
 		recruit.SetGame (this);
@@ -121,7 +121,7 @@ public class Game : MonoBehaviour
 	}
 	public void DeSpawnZombie (Zombie zombie)
 	{
-		Debug.Log ("Despawning the zombie at " + zombie.GetPosition ().ToString ());
+		//Debug.Log ("Despawning the zombie at " + zombie.GetPosition ().ToString ());
 		zombies.Remove (zombie);
 		Destroy (zombie.gameObject);
 	}

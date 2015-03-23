@@ -13,6 +13,9 @@ public abstract class Zombie : MonoBehaviour
 	public int laneID;
 	public int type;
 	public SpawnPoint spawnPoint = null; // Most recently visited spawn point (so that we don't turn/respawn twice)
+	public GameObject visibleT;
+	public GameObject invisibleT;
+	bool visible = false;
 
 	//public abstract enum State
 	public enum ProximityLevel
@@ -24,34 +27,45 @@ public abstract class Zombie : MonoBehaviour
 
 	void Update ()
 	{
-		game.HandleSpawnPoint (this);
+		// SetVisible (GetPosition ().x < 18.5f); // SetVisibility test
 		AdjustVelocity ();
 		Vector2 move = GetMove ();
 		Vector2 newPos = GetPosition () + move;
 		MoveBy (move);
-
+		game.HandleSpawnPoint (this);
 	}
 	public void AdjustVelocity ()
 	{
 		float closest = Mathf.Infinity; // Set value on closest zombie
 		bool found = false;
+		velocity = maxVelocity;
 		foreach (Zombie other in game.zombies) {
 			if (other != this && other.laneID == laneID) {
 				var pl = CanSee (other.GetPosition ());
 				var distance = Vector2.Distance (GetPosition (), other.GetPosition ());
 				if (pl <= ProximityLevel.Visible && distance < closest && other.velocity < velocity) {
-					Debug.Log ("Found a slower zombie in front of me!");
-					found = true;
-					closest = distance;
-					if (pl == ProximityLevel.Close)
-						velocity = other.velocity; // Simply stay behind them
-					else if (pl == ProximityLevel.Visible)
-						velocity = (maxVelocity + other.velocity) / 2; // Slow down towards them
+					if (other.sense == this.sense) {
+						if (IsBehind (other)) {
+							Debug.Log ("behind SLOWER!");
+							SetVisible (false);
+							found = true;
+							closest = distance;
+							if (pl == ProximityLevel.Close)
+								velocity = other.velocity; // Simply stay behind them
+							else if (pl == ProximityLevel.Visible)
+								velocity = (maxVelocity + other.velocity) / 2; // Slow down towards them
+						} else
+							SetVisible (true);
+					} else {
+						if (pl == ProximityLevel.Close) {
+							// change lane
+						}
+					}
 				}
 			}
 		}
-		if (!found)
-			velocity = maxVelocity;
+		//if (!found)
+
 	}
 	public Vector2 GetMove ()
 	{
@@ -65,8 +79,8 @@ public abstract class Zombie : MonoBehaviour
 
 	public ProximityLevel CanSee (Vector2 pos)
 	{
-		Vector2 min = GetPosition () - Vector2.one;
-		Vector2 max = GetPosition () + Vector2.one;
+		Vector2 min = GetPosition () - Vector2.one * 1.5f;
+		Vector2 max = GetPosition () + Vector2.one * 1.5f;
 		if (Util.InBox (pos, min, max))
 			return ProximityLevel.Close;
 		else {
@@ -130,6 +144,15 @@ public abstract class Zombie : MonoBehaviour
 			laneID = spawnPoint.laneID;
 		}
 	}
+	public bool IsBehind (Zombie zombie)
+	{
+		var delta = zombie.GetPosition () - this.GetPosition ();
+		var ourAngle = Mathf.Atan2 (direction.GetVector ().y, direction.GetVector ().x);
+		var deltaAngle = Mathf.Atan2 (delta.y, delta.x);
+		var diffAngle = Mathf.Abs (deltaAngle - ourAngle) % (2 * Mathf.PI);
+
+		return (diffAngle * Mathf.Rad2Deg < 90);
+	}
 	public Util.Direction GetDirection ()
 	{
 		return direction;
@@ -161,5 +184,13 @@ public abstract class Zombie : MonoBehaviour
 	public void SetGame (Game gameRef)
 	{
 		game = gameRef;
+	}
+	public void SetVisible (bool vis)
+	{
+		//if (vis != visible) {
+		visible = vis;
+		visibleT.renderer.enabled = visible;
+		invisibleT.renderer.enabled = !visible;
+		//}
 	}
 }

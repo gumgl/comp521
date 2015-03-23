@@ -46,14 +46,14 @@ public abstract class Zombie : MonoBehaviour
 				if (pl <= ProximityLevel.Visible && distance < closest && other.velocity < velocity) {
 					if (other.sense == this.sense) {
 						if (IsBehind (other)) {
-							Debug.Log ("behind SLOWER!");
+							//Debug.Log ("behind SLOWER!");
 							SetVisible (false);
 							found = true;
 							closest = distance;
 							if (pl == ProximityLevel.Close)
 								velocity = other.velocity; // Simply stay behind them
 							else if (pl == ProximityLevel.Visible)
-								velocity = (maxVelocity + other.velocity) / 2; // Slow down towards them
+								velocity = maxVelocity * 0.25f + other.velocity * 0.75f; // Slow down towards them
 						} else
 							SetVisible (true);
 					} else {

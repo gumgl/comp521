@@ -1,10 +1,11 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class SpawnPoint : MonoBehaviour
+public class SpawnPoint
 {
 	Dictionary<Util.Sense, Util.Direction> directions = new Dictionary<Util.Sense, Util.Direction> ();
 	public int laneID;
+	Vector2 position;
 	
 	public Util.Direction GetDirection (Util.Sense sense)
 	{
@@ -16,11 +17,11 @@ public class SpawnPoint : MonoBehaviour
 	}
 	public Vector2 GetPosition ()
 	{
-		return transform.position;
+		return position;
 	}
 	public void SetPosition (Vector2 pos)
 	{
-		transform.position = pos;
+		position = pos;
 	}
 }
 

@@ -62,23 +62,23 @@ public class Game : MonoBehaviour
 			Util.Direction dir;
 			Vector2 pos;
 			do { // Until we find an unoccupied spot
-				type = Random.Range (0, 1);
-				laneID = Random.Range (0, 2);
-				side = Random.Range (0, 2);
+				type = Random.Range (0, 2);
+				laneID = Random.Range (0, 3);
+				side = Random.Range (0, 3);
 				Lane lane = lanes [laneID];
-				float x, y;
+				float x, y, half = lane.width / 2f;
 				switch (side) {
 				case 0: // Left
-					x = Random.Range (lane.min.x, lane.min.x + lane.width);
-					y = Random.Range (lane.min.y, lane.max.y);
+					x = lane.min.x + half;
+					y = Random.Range (lane.min.y + half, lane.max.y - half);
 					if (sense == Util.Sense.CW)
 						dir = Util.Direction.Up;
 					else
 						dir = Util.Direction.Down;
 					break;
 				case 1: // Bottom
-					x = Random.Range (lane.min.x, lane.max.x);
-					y = Random.Range (lane.min.y, lane.min.y + lane.width);
+					x = Random.Range (lane.min.x + half, lane.max.x - half);
+					y = lane.min.y + half;
 					if (sense == Util.Sense.CW)
 						dir = Util.Direction.Left;
 					else
@@ -86,16 +86,16 @@ public class Game : MonoBehaviour
 					break;
 				case 2: // Top
 				default: // So that the compiler knows we always set x & y
-					x = Random.Range (lane.min.x, lane.max.x);
-					y = Random.Range (lane.max.y - lane.width, lane.max.y);
+					x = Random.Range (lane.min.x + half, lane.max.x - half);
+					y = lane.max.y - half;
 					if (sense == Util.Sense.CW)
 						dir = Util.Direction.Right;
 					else
 						dir = Util.Direction.Left;
 					break;
 				}
-				
 				pos = new Vector2 (x, y);
+				Debug.Log (pos.ToString ());
 				
 			} while (!CanSpawnZombie(pos));
 			
@@ -134,14 +134,14 @@ public class Game : MonoBehaviour
 					int tries = pts.Count * 2; // To avoid potential infinite loop when all spawn points are occupied (rare case)
 					SpawnPoint newPt;
 					do {
-						newPt = pts [Random.Range (0, pts.Count - 1)];
+						newPt = pts [Random.Range (0, pts.Count)];
 						tries --;
 					} while (!CanSpawnZombie(newPt.GetPosition ()) && tries > 0);
 					int type;
 					if (Random.Range (0f, 1f) < r)
-						type = Random.Range (2, 3);
+						type = Random.Range (2, 4);
 					else
-						type = Random.Range (0, 1);
+						type = Random.Range (0, 2);
 
 					if (type == zombie.type)
 						zombie.spawnPoint = newPt;

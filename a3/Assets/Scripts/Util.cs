@@ -61,7 +61,7 @@ public static class Util
 	public static Direction GetRandomDirection ()
 	{
 		int size = System.Enum.GetNames (typeof(Direction)).Length;
-		return (Direction)Random.Range (0, size - 1);
+		return (Direction)Random.Range (0, size);
 	}
 	public static Sense Reverse (this Sense sense)
 	{

@@ -100,9 +100,11 @@ public abstract class Zombie : MonoBehaviour
 	/// <summary>Resets position and direction to the current spawnPoint<summary>
 	public void ZeroOnSpawnPoint ()
 	{
-		SetPosition (spawnPoint.GetPosition ());
-		SetDirection (spawnPoint.GetDirection (sense));
-		laneID = spawnPoint.laneID;
+		if (spawnPoint != null) {
+			SetPosition (spawnPoint.GetPosition ());
+			SetDirection (spawnPoint.GetDirection (sense));
+			laneID = spawnPoint.laneID;
+		}
 	}
 	public Util.Direction GetDirection ()
 	{

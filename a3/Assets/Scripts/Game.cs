@@ -4,11 +4,14 @@ using System.Collections.Generic;
 public class Game : MonoBehaviour
 {
 	public List<Lane> lanes = new List<Lane> ();
-	public uint n; // # of zombies spawned
-	public float p; // percentage of respawn (1-p = percentage of simply moving along)
-	public float r; // percentage of hard zombies (1-r = percentage of easy zombies)
+	/// <summary># of zombies initially spawned</summary>
+	public int n;
+	/// <summary>percentage of respawn (1-p = percentage of simply moving along)</summary>
+	public float p;
+	/// <summary>percentage of hard zombies (1-r = percentage of easy zombies)summary>
+	public float r;
 	public List<Zombie> zombies = new List<Zombie> ();
-	public GameObject[] prefabs = new GameObject[4];
+	public Zombie[] prefabs = new Zombie[4];
 	public List<SpawnPoint> spawnPoints = new List<SpawnPoint> ();
 
 	void Start ()
@@ -82,7 +85,7 @@ public class Game : MonoBehaviour
 						dir = Util.Direction.Right;
 					break;
 				case 2: // Top
-				default:
+				default: // So that the compiler knows we always set x & y
 					x = Random.Range (lane.min.x, lane.max.x);
 					y = Random.Range (lane.max.y - lane.width, lane.max.y);
 					if (sense == Util.Sense.CW)
@@ -110,7 +113,7 @@ public class Game : MonoBehaviour
 	{
 		Zombie recruit = (Zombie)Instantiate (prefabs [type], Vector3.zero, Quaternion.identity);
 		recruit.transform.parent = this.transform;
-		recruit.game = this;
+		recruit.SetGame (this);
 		recruit.type = type;
 		recruit.SetPosition (pos);
 		zombies.Add (recruit);

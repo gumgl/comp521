@@ -3,7 +3,7 @@ using System.Collections;
 
 public abstract class Zombie : MonoBehaviour
 {
-	public Game game;
+	Game game;
 	public Util.Direction direction;
 	public Util.Sense sense;
 	static public float v = 1.0f; // in squares/second
@@ -23,7 +23,8 @@ public abstract class Zombie : MonoBehaviour
 
 	void Update ()
 	{
-		game.HandleSpawnPoint (this);
+		if (game != null)
+			game.HandleSpawnPoint (this);
 		Vector2 move = GetMove ();
 		Vector2 newPos = GetPosition () + move;
 
@@ -130,5 +131,9 @@ public abstract class Zombie : MonoBehaviour
 	public float GetRadius ()
 	{
 		return GetSize () / 2;
+	}
+	public void SetGame (Game gameRef)
+	{
+		game = gameRef;
 	}
 }

@@ -20,20 +20,13 @@ public class Lane : MonoBehaviour
 
 	public bool IsInside (Vector2 pos)
 	{
-		return ((inRange (pos.x, min.x, max.x) // Bottom and top spaces
-			&& (inRange (pos.y, min.y, min.y + 1) || inRange (pos.y, max.y - 1, max.y)))
-			|| (inRange (pos.y, min.y, max.y) // Left and right spaces
-			&& (inRange (pos.x, min.x, min.x + 1) || inRange (pos.x, max.x - 1, max.x))));
-	}
+		/*return ((Util.InRange (pos.x, min.x, max.x) // Bottom and top spaces
+			&& (Util.InRange (pos.y, min.y, min.y + width) || Util.InRange (pos.y, max.y - width, max.y)))
+			|| (Util.InRange (pos.y, min.y, max.y) // Left and right spaces
+			&& (Util.InRange (pos.x, min.x, min.x + width) || Util.InRange (pos.x, max.x - width, max.x))));*/
 
-	/// <summary>Calculates whether x is in [a,b]</summary>
-	/// <returns><c>true</c> if x is in the range defined by [a,b],<c>false</c> otherwise.</returns>
-	/// <param name="x">The value we're testing.</param>
-	/// <param name="a">The min value</param>
-	/// <param name="b">The max value.</param>
-	static bool inRange (float x, float a, float b)
-	{
-		return (a < x && x < b);
+		// Another simpler way: check if it's in the outside box while not in inside box
+		return (Util.InBox (pos, min, max) && ! Util.InBox (pos, min + Vector2.one * width, max - Vector2.one * width));
 	}
 }
 

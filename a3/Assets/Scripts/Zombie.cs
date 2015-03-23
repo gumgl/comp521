@@ -23,10 +23,10 @@ public abstract class Zombie : MonoBehaviour
 
 	void Update ()
 	{
-		if (game != null)
-			game.HandleSpawnPoint (this);
+		game.HandleSpawnPoint (this);
 		Vector2 move = GetMove ();
 		Vector2 newPos = GetPosition () + move;
+		MoveBy (move);
 
 	}
 	public Vector2 GetMove ()

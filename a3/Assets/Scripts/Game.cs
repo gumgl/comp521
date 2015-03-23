@@ -145,16 +145,15 @@ public class Game : MonoBehaviour
 					else
 						type = Random.Range (0, 2);
 
-					if (type == zombie.type)
-						zombie.spawnPoint = newPt;
-					else { // Only spawn a new zombie if type changed
+					if (type != zombie.type) { // Only spawn a new zombie if type changed
 						Zombie newZombie = SpawnZombie (type, newPt.GetPosition ());
 						newZombie.sense = zombie.sense;
 						DeSpawnZombie (zombie);
 						zombie = newZombie;
 					}
 					zombie.spawnPoint = newPt;
-				}
+				} else
+					zombie.spawnPoint = pt;
 				// Either way, we still set its position & direction
 				zombie.ZeroOnSpawnPoint ();
 				break;

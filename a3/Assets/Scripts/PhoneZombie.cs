@@ -11,6 +11,7 @@ public class PhoneZombie : Zombie
 	void Start ()
 	{
 		maxVelocity = v / 2f;
+		canSwitchLanes = true;
 	}
 }
 

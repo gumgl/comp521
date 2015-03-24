@@ -11,6 +11,7 @@ public class ModernZombie : Zombie
 	void Start ()
 	{
 		maxVelocity = 4 * v;
+		canSwitchLanes = true;
 	}
 }
 

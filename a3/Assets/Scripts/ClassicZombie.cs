@@ -11,6 +11,7 @@ public class ClassicZombie : Zombie
 	void Start ()
 	{
 		maxVelocity = 2f * v;
+		canSwitchLanes = false;
 	}
 //	public override void Move ()
 //	{

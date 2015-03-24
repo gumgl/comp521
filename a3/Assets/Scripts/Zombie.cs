@@ -10,6 +10,7 @@ public abstract class Zombie : MonoBehaviour
 	static public float size = 1.0f;
 	public float velocity;
 	public float maxVelocity;
+	public bool canSwitchLanes;
 	public int laneID;
 	public int type;
 	public SpawnPoint spawnPoint = null; // Most recently visited spawn point (so that we don't turn/respawn twice)
@@ -45,20 +46,23 @@ public abstract class Zombie : MonoBehaviour
 				var distance = Vector2.Distance (GetPosition (), other.GetPosition ());
 				if (pl <= ProximityLevel.Visible && distance < closest && other.velocity < velocity) {
 					if (other.sense == this.sense) {
-						if (IsBehind (other)) {
+						if (distance < 1.5f && canSwitchLanes) { // Too close, doesnt matter if behind or not. One must move.
+							TryChangeLane ();
+						} else if (IsBehind (other)) {
 							//Debug.Log ("behind SLOWER!");
 							SetVisible (false);
 							found = true;
 							closest = distance;
-							if (pl == ProximityLevel.Close)
-								velocity = other.velocity; // Simply stay behind them
-							else if (pl == ProximityLevel.Visible)
+							if (pl == ProximityLevel.Close) {
+								velocity = maxVelocity * 0.05f + other.velocity * 0.95f; // Slow down a lot
+							} else if (pl == ProximityLevel.Visible)
 								velocity = maxVelocity * 0.25f + other.velocity * 0.75f; // Slow down towards them
 						} else
 							SetVisible (true);
 					} else {
 						if (pl == ProximityLevel.Close) {
 							// change lane
+							TryChangeLane ();
 						}
 					}
 				}
@@ -105,21 +109,45 @@ public abstract class Zombie : MonoBehaviour
 				return ProximityLevel.Invisible;
 		}
 	}
+	public bool TryChangeLane ()
+	{
+		Debug.Log ("Trying to change lane!");
+		if (ChangeLaneLegal (-1)) {
+			ChangeLane (-1);
+			return true;
+		} else if (ChangeLaneLegal (+1)) {
+			ChangeLane (+1);
+			return true;
+		} else
+			return false;
+	}
+	public bool ChangeLaneLegal (int delta)
+	{
+		int newLaneID = laneID + delta;
+		if (! Util.InRange (newLaneID, 0, 2))
+			return false;
+		if (! game.CanSpawnZombie (GetLaneChangeMove (delta)))
+			return false;
+		return true;
+	}
 	/// <summary>Changes the zombie's lane and updates its position.</summary>
 	/// <param name="delta">Change in laneID, towards the center.</param>
 	public void ChangeLane (int delta)
 	{
 		int newLaneID = laneID + delta;
-		if (Util.InRange (newLaneID, 0, 2)) {
-			Vector2 move;
-			if ((delta == -1 && sense == Util.Sense.CW) || (delta == 1 && sense == Util.Sense.CCW))
-				move = direction.TurnLeft ().GetVector ();
-			else
-				move = direction.TurnRight ().GetVector ();
+		Vector2 move = GetLaneChangeMove (delta);
 
-			MoveBy (move);
-			laneID = newLaneID;
-		}
+		MoveBy (move);
+		laneID = newLaneID;
+	}
+	public Vector2 GetLaneChangeMove (int delta)
+	{
+		Vector2 move;
+		if ((delta == -1 && sense == Util.Sense.CW) || (delta == 1 && sense == Util.Sense.CCW))
+			move = direction.TurnLeft ().GetVector ();
+		else
+			move = direction.TurnRight ().GetVector ();
+		return move;
 	}
 	public void TurnRight ()
 	{

@@ -11,6 +11,7 @@ public class ShamblerZombie : Zombie
 	void Start ()
 	{
 		maxVelocity = v / 2;
+		canSwitchLanes = true;
 	}
 //	public override void Move ()
 //	{

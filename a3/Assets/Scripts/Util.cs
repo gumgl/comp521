@@ -56,7 +56,7 @@ public static class Util
 	public static Direction Reverse (this Direction dir)
 	{
 		int size = System.Enum.GetNames (typeof(Direction)).Length;
-		return (Direction)(((int)dir + 1) % size);
+		return (Direction)(((int)dir + 2) % size);
 	}
 	public static Direction GetRandomDirection ()
 	{
@@ -69,7 +69,7 @@ public static class Util
 	}
 	public static Sense GetRandomSense ()
 	{
-		return (Sense)Random.Range (0, 1);
+		return (Sense)Random.Range (0, 2);
 	}
 
 	/// <summary>Calculates whether x is in [a,b].</summary>
@@ -95,4 +95,3 @@ public static class Util
 		return (InRange (pt.x, min.x, max.x) && InRange (pt.y, min.y, max.y));
 	}
 }
-

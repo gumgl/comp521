@@ -13,9 +13,12 @@ public class ClassicZombie : Zombie
 		maxVelocity = 2f * v;
 		canSwitchLanes = false;
 	}
+	override public void SpecialPreMovement ()
+	{
+		velocity = maxVelocity;
+	}
 //	public override void Move ()
 //	{
 //		MoveBy (direction.GetVector () * maxVelocity * Time.deltaTime);
 //	}
 }
-

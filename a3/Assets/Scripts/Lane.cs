@@ -29,4 +29,3 @@ public class Lane : MonoBehaviour
 		return (Util.InBox (pos, min, max) && ! Util.InBox (pos, min + Vector2.one * width, max - Vector2.one * width));
 	}
 }
-

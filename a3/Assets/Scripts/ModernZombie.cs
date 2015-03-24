@@ -13,5 +13,8 @@ public class ModernZombie : Zombie
 		maxVelocity = 4 * v;
 		canSwitchLanes = true;
 	}
+	override public void SpecialPreMovement ()
+	{
+		velocity = maxVelocity;
+	}
 }
-

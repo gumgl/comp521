@@ -29,17 +29,18 @@ public abstract class Zombie : MonoBehaviour
 	void Update ()
 	{
 		// SetVisible (GetPosition ().x < 18.5f); // SetVisibility test
+		SpecialPreMovement ();
 		AdjustVelocity ();
 		Vector2 move = GetMove ();
 		Vector2 newPos = GetPosition () + move;
 		MoveBy (move);
 		game.HandleSpawnPoint (this);
 	}
+	abstract public void SpecialPreMovement ();
 	public void AdjustVelocity ()
 	{
 		float closest = Mathf.Infinity; // Set value on closest zombie
 		bool found = false;
-		velocity = maxVelocity;
 		foreach (Zombie other in game.zombies) {
 			if (other != this && other.laneID == laneID) {
 				var pl = CanSee (other.GetPosition ());
@@ -212,6 +213,10 @@ public abstract class Zombie : MonoBehaviour
 	public void SetGame (Game gameRef)
 	{
 		game = gameRef;
+	}
+	virtual public Util.Sense GetSense ()
+	{
+		return sense;
 	}
 	public void SetVisible (bool vis)
 	{

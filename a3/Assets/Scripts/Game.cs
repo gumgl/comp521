@@ -13,6 +13,7 @@ public class Game : MonoBehaviour
 	public List<Zombie> zombies = new List<Zombie> ();
 	public Zombie[] prefabs = new Zombie[4];
 	public List<SpawnPoint> spawnPoints = new List<SpawnPoint> ();
+	Util.Sense sense;
 
 	void Start ()
 	{
@@ -56,7 +57,7 @@ public class Game : MonoBehaviour
 	}
 	void SpawnInitialZombies ()
 	{
-		Util.Sense sense = Util.GetRandomSense ();
+		sense = Util.GetRandomSense ();
 		for (int i=0; i<n; i++) { // Spawn zombies
 			int type, laneID, side;
 			Util.Direction dir;
@@ -147,7 +148,7 @@ public class Game : MonoBehaviour
 
 					if (type != zombie.type) { // Only spawn a new zombie if type changed
 						Zombie newZombie = SpawnZombie (type, newPt.GetPosition ());
-						newZombie.sense = zombie.sense;
+						newZombie.sense = sense;
 						DeSpawnZombie (zombie);
 						zombie = newZombie;
 					}
@@ -177,4 +178,3 @@ public class Game : MonoBehaviour
 		return true;
 	}
 }
-

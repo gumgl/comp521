@@ -3,7 +3,9 @@ using System.Collections;
 
 public class Survivor : MonoBehaviour
 {
+	public Game game;
 	Util.Direction direction;
+
 
 	void Start ()
 	{

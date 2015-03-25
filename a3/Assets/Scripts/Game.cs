@@ -13,6 +13,8 @@ public class Game : MonoBehaviour
 	public List<Zombie> zombies = new List<Zombie> ();
 	public Zombie[] prefabs = new Zombie[4];
 	public List<SpawnPoint> spawnPoints = new List<SpawnPoint> ();
+	public Survivor survivor;
+	public bool showingVisible = true;
 	Util.Sense sense;
 
 	void Start ()
@@ -104,10 +106,6 @@ public class Game : MonoBehaviour
 			recruit.sense = sense;
 			recruit.laneID = laneID;
 		}
-	}
-	void Update ()
-	{
-	
 	}
 	public Zombie SpawnZombie (int type, Vector2 pos)
 	{

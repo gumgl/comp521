@@ -29,6 +29,7 @@ public abstract class Zombie : MonoBehaviour
 	void Update ()
 	{
 		// SetVisible (GetPosition ().x < 18.5f); // SetVisibility test
+		UpdateVisibility ();
 		SpecialPreMovement ();
 		AdjustVelocity ();
 		Vector2 move = GetMove ();
@@ -37,10 +38,16 @@ public abstract class Zombie : MonoBehaviour
 		game.HandleSpawnPoint (this);
 	}
 	abstract public void SpecialPreMovement ();
+	public void UpdateVisibility ()
+	{
+		if (SurvivorCanSee (game.survivor))
+			SetVisible (true);
+		else
+			SetVisible (false);
+	}
 	public void AdjustVelocity ()
 	{
 		float closest = Mathf.Infinity; // Set value on closest zombie
-		bool found = false;
 		foreach (Zombie other in game.zombies) {
 			if (other != this && other.laneID == laneID) {
 				var pl = CanSee (other.GetPosition ());
@@ -51,37 +58,41 @@ public abstract class Zombie : MonoBehaviour
 							TryChangeLane ();
 						} else if (IsBehind (other)) {
 							//Debug.Log ("behind SLOWER!");
-							SetVisible (false);
-							found = true;
+							if (!game.showingVisible)
+								SetVisible (false);
 							closest = distance;
 							if (pl == ProximityLevel.Close) {
 								velocity = maxVelocity * 0.05f + other.velocity * 0.95f; // Slow down a lot
 							} else if (pl == ProximityLevel.Visible)
 								velocity = maxVelocity * 0.25f + other.velocity * 0.75f; // Slow down towards them
-						} else
+						} else if (!game.showingVisible)
 							SetVisible (true);
 					} else {
 						if (pl == ProximityLevel.Close) {
-							// change lane
 							TryChangeLane ();
 						}
 					}
 				}
 			}
 		}
-		//if (!found)
-
 	}
 	public Vector2 GetMove ()
 	{
 		return direction.GetVector () * velocity * Time.deltaTime;
 	}
-
+	public bool SurvivorCanSee (Survivor food)
+	{
+		// from zombie to survivor, check if name we hit the survivor (trickier to check if we hit this zombie)
+		var delta = food.GetPosition () - this.GetPosition ();
+		var hit = Physics2D.Raycast (this.GetPosition (), delta);
+		if (hit.collider != null)
+			Debug.Log (hit.transform.name);
+		return (hit.collider != null && hit.transform.name == "Survivor");
+	}
 	public bool CanSeeSurvivor (Survivor food)
 	{
 		return CanSee (food.GetPosition ()) <= ProximityLevel.Visible;
 	}
-
 	public ProximityLevel CanSee (Vector2 pos)
 	{
 		Vector2 min = GetPosition () - Vector2.one * 1.5f;
@@ -112,7 +123,7 @@ public abstract class Zombie : MonoBehaviour
 	}
 	public bool TryChangeLane ()
 	{
-		Debug.Log ("Trying to change lane!");
+		//Debug.Log ("Trying to change lane!");
 		if (ChangeLaneLegal (-1)) {
 			ChangeLane (-1);
 			return true;

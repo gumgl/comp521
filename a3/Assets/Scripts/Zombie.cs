@@ -84,10 +84,12 @@ public abstract class Zombie : MonoBehaviour
 	{
 		// from zombie to survivor, check if name we hit the survivor (trickier to check if we hit this zombie)
 		var delta = food.GetPosition () - this.GetPosition ();
-		var hit = Physics2D.Raycast (this.GetPosition (), delta);
-		if (hit.collider != null)
-			Debug.Log (hit.transform.name);
-		return (hit.collider != null && hit.transform.name == "Survivor");
+		RaycastHit hit;
+		bool collided = Physics.Raycast (this.GetPosition (), delta, out hit);
+//		Debug.DrawRay (this.GetPosition (), delta, Color.cyan);
+//		if (collided)
+//			Debug.Log (hit.collider.gameObject.name);
+		return (collided && hit.collider.gameObject.name == "Survivor");
 	}
 	public bool CanSeeSurvivor (Survivor food)
 	{

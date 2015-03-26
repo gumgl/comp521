@@ -16,8 +16,8 @@ public class PhoneZombie : Zombie
 	}
 	void Start ()
 	{
-		minRandomVelocity = v / 2f;
-		maxRandomVelocity = v * 2f;
+		minRandomVelocity = game.v / 2f;
+		maxRandomVelocity = game.v * 2f;
 		canSwitchLanes = false;
 	}
 	override public void SpecialPreMovement ()

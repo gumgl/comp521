@@ -3,10 +3,9 @@ using System.Collections;
 
 public abstract class Zombie : MonoBehaviour
 {
-	Game game;
+	protected Game game;
 	public Util.Direction direction;
 	public Util.Sense sense;
-	static public float v = 2.0f; // in squares/second
 	static public float size = 1.0f;
 	public float velocity;
 	public float maxVelocity;
@@ -205,11 +204,11 @@ public abstract class Zombie : MonoBehaviour
 	}
 	public Vector2 GetPosition ()
 	{
-		return transform.position;
+		return transform.position.GetVector2 ();
 	}
 	public void SetPosition (Vector2 pos)
 	{
-		transform.position = pos;
+		transform.position = pos.GetVector3 ();
 	}
 	public int GetLaneID ()
 	{

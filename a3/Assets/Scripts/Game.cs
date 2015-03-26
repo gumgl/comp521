@@ -4,17 +4,22 @@ using System.Collections.Generic;
 public class Game : MonoBehaviour
 {
 	public List<Lane> lanes = new List<Lane> ();
-	/// <summary># of zombies initially spawned</summary>
+	/// <summary># of zombies initially spawned.</summary>
 	public int n;
-	/// <summary>percentage of respawn (1-p = percentage of simply moving along)</summary>
+	/// <summary>percentage of respawn (1-p = percentage of simply moving along).</summary>
 	public float p;
-	/// <summary>percentage of hard zombies (1-r = percentage of easy zombies)summary>
+	/// <summary>percentage of hard zombies (1-r = percentage of easy zombies).</summary>
 	public float r;
+	/// <summary>Velocity used throughout the game.</summary>
+	public float v;
+
 	public List<Zombie> zombies = new List<Zombie> ();
 	public Zombie[] prefabs = new Zombie[4];
 	public List<SpawnPoint> spawnPoints = new List<SpawnPoint> ();
 	public Survivor survivor;
 	public bool showingVisible = true;
+	public List<GameObject> visitPointsCW = new List<GameObject> ();
+	public List<GameObject> visitPointsCCW = new List<GameObject> ();
 	Util.Sense sense;
 
 	void Start ()
@@ -174,5 +179,9 @@ public class Game : MonoBehaviour
 				return false;
 		}
 		return true;
+	}
+	public Util.Sense GetSense ()
+	{
+		return sense;
 	}
 }

@@ -10,7 +10,7 @@ public class ModernZombie : Zombie
 	}
 	void Start ()
 	{
-		maxVelocity = 4 * v;
+		maxVelocity = 4 * game.v;
 		canSwitchLanes = true;
 	}
 	override public void SpecialPreMovement ()

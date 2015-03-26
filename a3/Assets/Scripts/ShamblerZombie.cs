@@ -10,7 +10,7 @@ public class ShamblerZombie : Zombie
 	}
 	void Start ()
 	{
-		maxVelocity = v / 2;
+		maxVelocity = game.v / 2;
 		canSwitchLanes = true;
 	}
 	override public void SpecialPreMovement ()

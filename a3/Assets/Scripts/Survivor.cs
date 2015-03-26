@@ -19,6 +19,7 @@ public class Survivor : MonoBehaviour
 			targets = game.visitPointsCCW;
 
 		agent = GetComponent<NavMeshAgent> ();
+		agent.speed = game.v * 1.5f;
 		//agent.SetDestination (new Vector2 (0.5f, 10.5f).GetVector3 ());
 		//GeneratePath ();
 	}

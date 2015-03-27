@@ -1,0 +1,6 @@
+Settings:
+n = 5
+p = 0.2
+r = 0.3
+
+Lowering the randomness of the zombies' behaviour makes the AI stronger, therefore when p and r are low, the AI can handle predictable zombies well.

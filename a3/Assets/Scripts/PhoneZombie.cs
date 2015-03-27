@@ -4,7 +4,7 @@ using System.Collections;
 public class PhoneZombie : Zombie
 {
 	State state = State.Normal;
-	float stateExpiry = Time.time;
+	float stateExpiry;
 	static float maxStateLength = 5; // in seconds
 	float minRandomVelocity;
 	float maxRandomVelocity;
@@ -16,9 +16,10 @@ public class PhoneZombie : Zombie
 	}
 	void Start ()
 	{
+		stateExpiry = Time.time;
 		minRandomVelocity = game.v / 2f;
 		maxRandomVelocity = game.v * 2f;
-		canSwitchLanes = false;
+		canSwitchLanes = true;
 	}
 	override public void SpecialPreMovement ()
 	{

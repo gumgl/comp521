@@ -20,13 +20,19 @@ public class Game : MonoBehaviour
 	public bool showingVisible = true;
 	public List<GameObject> visitPointsCW = new List<GameObject> ();
 	public List<GameObject> visitPointsCCW = new List<GameObject> ();
+	public UnityEngine.UI.Text winText;
+	public UnityEngine.UI.Text lossText;
+	public float maxTime;
+	int gameStatus = 0; // 0 ongoing, 1 loss, 2 win
 	Util.Sense sense;
+
 
 	void Start ()
 	{
 		AddSpawnPoints ();
 		SpawnInitialZombies ();
-
+		winText.enabled = false;
+		lossText.enabled = false;
 	}
 	void AddSpawnPoints ()
 	{
@@ -183,5 +189,31 @@ public class Game : MonoBehaviour
 	public Util.Sense GetSense ()
 	{
 		return sense;
+	}
+	void Update ()
+	{
+		if (gameStatus == 0 && Time.time > maxTime * v * 3)
+			Loss ();
+	}
+	public void Win ()
+	{
+		Debug.Log ("WIN");
+		gameStatus = 2;
+		winText.enabled = true;
+		EndGame ();
+	}
+	public void Loss ()
+	{
+		Debug.Log ("LOSS");
+		gameStatus = 1;
+		lossText.enabled = true;
+	}
+
+	void EndGame ()
+	{
+		foreach (Zombie zombie in zombies)
+			zombie.renderer.enabled = false;
+		survivor.renderer.enabled = false;
+		Debug.Log ("Game duration (s): " + Time.time.ToString () + " = v * " + (Time.time / v).ToString ());
 	}
 }

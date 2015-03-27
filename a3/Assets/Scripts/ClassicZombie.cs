@@ -6,7 +6,8 @@ public class ClassicZombie : Zombie
 
 	public enum State
 	{
-		Normal
+		Normal,
+		Slowdown
 	}
 	void Start ()
 	{

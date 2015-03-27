@@ -27,10 +27,11 @@ public abstract class Zombie : MonoBehaviour
 
 	void Update ()
 	{
+		GetDeathBox ().DebugDraw ();
 		// SetVisible (GetPosition ().x < 18.5f); // SetVisibility test
-		UpdateVisibility ();
+		//UpdateVisibility ();
 		SpecialPreMovement ();
-		AdjustVelocity ();
+		AdjustVelocity2 ();
 		Vector2 move = GetMove ();
 		Vector2 newPos = GetPosition () + move;
 		MoveBy (move);
@@ -55,7 +56,7 @@ public abstract class Zombie : MonoBehaviour
 					if (other.sense == this.sense) {
 						if (distance < 1.5f && canSwitchLanes) { // Too close, doesnt matter if behind or not. One must move.
 							TryChangeLane ();
-						} else if (IsBehind (other)) {
+						} else if (IsBehindOf (other)) {
 							//Debug.Log ("behind SLOWER!");
 							if (!game.showingVisible)
 								SetVisible (false);
@@ -72,6 +73,20 @@ public abstract class Zombie : MonoBehaviour
 						}
 					}
 				}
+			}
+		}
+	}
+	public void AdjustVelocity2 ()
+	{
+		foreach (Zombie other in game.zombies) {
+			if (other != this && InFrontOfMe (other) && other.velocity < this.maxVelocity) {
+				bool switchedLanes = false;
+				if (canSwitchLanes)
+					switchedLanes = TryChangeLane ();
+				if (!switchedLanes && other.sense == this.sense)
+					this.velocity = other.velocity;
+				if (!switchedLanes && other.sense != this.sense)
+					this.velocity = 0;
 			}
 		}
 	}
@@ -185,7 +200,7 @@ public abstract class Zombie : MonoBehaviour
 			laneID = spawnPoint.laneID;
 		}
 	}
-	public bool IsBehind (Zombie zombie)
+	public bool IsBehindOf (Zombie zombie)
 	{
 		var delta = zombie.GetPosition () - this.GetPosition ();
 		var ourAngle = Mathf.Atan2 (direction.GetVector ().y, direction.GetVector ().x);
@@ -193,6 +208,11 @@ public abstract class Zombie : MonoBehaviour
 		var diffAngle = Mathf.Abs (deltaAngle - ourAngle) % (2 * Mathf.PI);
 
 		return (diffAngle * Mathf.Rad2Deg < 90);
+	}
+	public bool InFrontOfMe (Zombie zombie)
+	{
+		Util.Box detectionArea = GetBox (-GetRadius (), 2, GetRadius (), GetRadius ());
+		return Util.InBox (zombie.GetPosition (), detectionArea);
 	}
 	public Util.Direction GetDirection ()
 	{
@@ -237,5 +257,42 @@ public abstract class Zombie : MonoBehaviour
 		visibleT.renderer.enabled = visible;
 		invisibleT.renderer.enabled = !visible;
 		//}
+	}
+	public Util.Box GetDeathBox ()
+	{
+		return GetBox (1.5f, 7.5f, 1.5f, 1.5f);
+	}
+	public Util.Box GetBox (float behind, float forward, float left, float right)
+	{
+		Vector2 min = GetPosition ();
+		Vector2 max = GetPosition ();
+		switch (GetDirection ()) {
+		case Util.Direction.Up:
+			max.y += forward;
+			min.y -= behind;
+			min.x -= left;
+			max.x += right;
+			break;
+		case Util.Direction.Right:
+			max.x += forward;
+			min.x -= behind;
+			max.y += left;
+			min.y -= right;
+			break;
+		case Util.Direction.Down:
+			min.y -= forward;
+			max.y += behind;
+			max.x += left;
+			min.x -= right;
+			break;
+		case Util.Direction.Left:
+			min.x -= forward;
+			max.x += behind;
+			min.y -= left;
+			max.y += right;
+			break;
+
+		}
+		return new Util.Box (min, max);
 	}
 }

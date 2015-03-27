@@ -1,0 +1,3 @@
+AI Strategy:
+Use NavMesh to find a path, then periodically check if path is correct, using prediction on the zombies' movements with their current velocity, position and direction.
+Whenever the current path will collide with a zombie, stop and wait for the path to be clear. In case of immediate zombie collision, we try to run away from him and then recalculate the path.

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class VectorP
+public class VectorP 
 {
 	/// <summary>Angle in radians</summary>
 	public float angle = 0f;
@@ -26,10 +26,21 @@ public class VectorP
 		magnitude = v.magnitude;
 	}
 
-	public Vector2 GetVector2() {
+	public Vector2 ToVector2() {
 		Vector2 toRet;
 		toRet.x = magnitude * Mathf.Cos(angle);
 		toRet.y = magnitude * Mathf.Sin(angle);
 		return toRet;
 	}
+
+	/*public int CompareTo(object obj) {
+		if (obj == null) return 1;
+
+		VectorP v = obj as VectorP;
+
+		if (angle > v.angle)
+			return 1;
+		else
+			return -1;
+	}*/
 }

@@ -92,7 +92,7 @@ public class God : MonoBehaviour {
 			pos.x = target.x;
 			pos.y = target.y;
 
-			camera.transform.position = pos;
+			camera.transform.position = Vector3.Lerp(camera.transform.position, pos, Time.deltaTime * 2 );
 		}
 			
 	}

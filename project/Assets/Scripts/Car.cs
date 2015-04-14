@@ -1,17 +1,27 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using Random = UnityEngine.Random;
 
 public class Car : MonoBehaviour
 {
-	private const int MIN_VECTORS = 8;
-	private const int MAX_VECTORS = 8;
-	private const float MAX_MAGNITUDE = 3;
-	public GameObject body;
-	private Mesh bodyMesh;
+	public const int MIN_VECTORS = 8;
+	public const int MAX_VECTORS = 8;
+	public const int MIN_WHEELS = 1;
+	public const int MAX_WHEELS = 3;
+	public const float WHEEL_FREQUENCY = 0.5f;
+	public const float MAX_MAGNITUDE = 2;
+	public const float MIN_WHEEL_RADIUS = 0.2f;
+	public const float MAX_WHEEL_RADIUS = 1f;
+	public const float MOTOR_SPEED = -500;
 
-	private List<VectorP> corners = new List<VectorP>();
+	public Wheel wheelPrefab;
+	public GameObject chassis;
+	private Mesh chassisMesh;
+
+	public List<VectorP> corners = new List<VectorP>();
+	public List<Wheel> wheels = new List<Wheel>();
 
 	public void Init() {
 		
@@ -19,29 +29,62 @@ public class Car : MonoBehaviour
 
 	public void InitRandom() {
 		corners.Clear();
-		int numVectors = (MAX_VECTORS == MIN_VECTORS) ? MIN_VECTORS : Random.Range(MIN_VECTORS, MAX_VECTORS + 1);
 
-		for (int i = 0; i < numVectors; i++) {
-			VectorP newV = new VectorP();
+		// VECTORS
+		int numCorners = (MAX_VECTORS == MIN_VECTORS) ? MIN_VECTORS : Random.Range(MIN_VECTORS, MAX_VECTORS + 1);
+
+		for (int i = 0; i < numCorners; i++) {
+			var newV = new VectorP();
 
 			if (i<4) // add one vector in each quadrant. otherwise the (0,0) is outside the car
-				newV.angle = Random.Range(Mathf.PI / 2 * i, Mathf.PI / 2 * (i+1));
+				newV.Angle = Random.Range(Mathf.PI / 2 * i, Mathf.PI / 2 * (i+1));
 			else
-				newV.angle = Random.Range(0f, Mathf.PI * 2);
+				newV.Angle = Random.Range(0f, Mathf.PI * 2);
 
-			newV.magnitude = Random.Range(0f, MAX_MAGNITUDE);
+			newV.Magnitude = Random.Range(0f, MAX_MAGNITUDE);
 			corners.Add(newV);
 		}
 		//corners.Sort();
-		corners.Sort((v1, v2) => v1.angle.CompareTo(v2.angle)); // Sort by angle
-
+		corners.Sort((v1, v2) => v1.Angle.CompareTo(v2.Angle)); // Sort by angle
 		CreateMesh();
+
+		// WHEELS
+		//int numWheels = (MAX_WHEELS == MIN_WHEELS) ? MIN_WHEELS : Random.Range(MIN_WHEELS, MAX_WHEELS + 1);
+		//Debug.Log("Creating a random car with " + numWheels + " wheels");
+
+		for (int i = 0; i < MAX_WHEELS; i++) {
+			if (wheels.Count < MIN_WHEELS || Random.Range(0f, 1f) < WHEEL_FREQUENCY) {
+				Wheel newW = (Wheel) Instantiate(wheelPrefab, Vector2.zero, Quaternion.identity);
+				newW.transform.parent = this.transform;
+				newW.car = this;
+				newW.CornerID = Random.Range(0, numCorners);
+				newW.radius = Random.Range(MIN_WHEEL_RADIUS, MAX_WHEEL_RADIUS);
+
+				wheels.Add(newW);
+
+				var joint = chassis.AddComponent<WheelJoint2D>();
+				joint.connectedBody = newW.GetComponent<Rigidbody2D>();
+				joint.connectedAnchor = Vector2.zero;
+				joint.anchor = newW.Corner.ToVector2();
+
+				var motor = joint.motor;
+				var suspension = joint.suspension;
+				motor.motorSpeed = MOTOR_SPEED;
+				suspension.dampingRatio = 0.9f;
+				suspension.frequency = 0.5f;
+
+				joint.motor = motor;
+				joint.useMotor = true;
+			}
+		}
+
+		chassis.GetComponent<Rigidbody2D>().mass = CalcChassisWeight();
 
 		DebugMesh();
 	}
 
 	public void CreateMesh() {
-		bodyMesh = new Mesh();
+		chassisMesh = new Mesh();
 		int numVectors = corners.Count;
 
 		Vector3[] vertices = new Vector3[numVectors + 1]; // last index is for center (0,0)
@@ -56,19 +99,45 @@ public class Car : MonoBehaviour
 
 		vertices[numVectors] = Vector2.zero;
 
-		bodyMesh.vertices = vertices;
-		bodyMesh.triangles = triangles;
-		body.GetComponent<MeshFilter>().mesh = bodyMesh;
+		chassisMesh.vertices = vertices;
+		chassisMesh.triangles = triangles;
+		chassis.GetComponent<MeshFilter>().mesh = chassisMesh;
+
+		/*Vector2[] pts = new Vector2[numVectors];// = vertices.Select(x => (Vector2) x)
+		for (int i = 0; i < numVectors; i++)
+			pts[i] = (Vector2) vertices[i];*/
+		
+		chassis.GetComponent<PolygonCollider2D>().points = corners.Select(x => x.ToVector2()).ToArray();
 	}
 
 	void DebugMesh() {
 		for (int i = 0; i < corners.Count; i++) {
-			Vector2 pos = body.transform.position;
+			Vector2 pos = chassis.transform.position;
 			var p1 = corners[i].ToVector2();
-			var p2 = corners[(i + 1)%corners.Count].ToVector2();
-			Debug.DrawLine(pos + p1, pos + p2, Color.red, Mathf.Infinity);
+			var p2 = corners[(i + 1) % corners.Count].ToVector2();
+			Debug.DrawLine(pos + p1, pos + p2, Color.red);
+			//Debug.DrawLine(pos , pos + p1, Color.red, Mathf.Infinity);
 			Debug.Log(String.Format("Mesh Point #{0} ({1}, {2})", i, p1.ToString(), p2.ToString()));
 		}
+	}
+
+	float CalcChassisWeight() {
+		float total = 0f;
+
+		for (int i = 0; i < corners.Count; i++) {
+			var center = Vector2.zero;
+			var curr = corners[i].ToVector2();
+			var next = corners[(i+1) % corners.Count].ToVector2();
+
+			var a = (curr - center).magnitude;
+			var b = (next - curr).magnitude;
+			var c = (center - next).magnitude;
+
+			var p = (a + b + c) / 2f;
+
+			total += Mathf.Sqrt(p*(p - a)*(p - b)*(p - c));
+		}
+		return total;
 	}
 	
 	void Start ()
@@ -77,6 +146,6 @@ public class Car : MonoBehaviour
 	}
 	void Update ()
 	{
-	
+		DebugMesh();
 	}
 }

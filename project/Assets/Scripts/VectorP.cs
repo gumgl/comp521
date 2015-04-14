@@ -4,32 +4,33 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
+/// <summary>A Vector2 based on polar coordinates.</summary>
 public class VectorP 
 {
 	/// <summary>Angle in radians</summary>
-	public float angle = 0f;
+	public float Angle = 0f;
 
 	/// <summary>Magnitude</summary>
-	public float magnitude = 0f;
+	public float Magnitude = 0f;
 
 	public VectorP() {
 		
 	}
 
 	public VectorP(float pAngle, float pMagnitude) {
-		angle = pAngle;
-		magnitude = pMagnitude;
+		Angle = pAngle;
+		Magnitude = pMagnitude;
 	}
 
 	public VectorP(Vector2 v) {
-		angle = Mathf.Atan2(v.y, v.x);
-		magnitude = v.magnitude;
+		Angle = Mathf.Atan2(v.y, v.x);
+		Magnitude = v.magnitude;
 	}
 
 	public Vector2 ToVector2() {
 		Vector2 toRet;
-		toRet.x = magnitude * Mathf.Cos(angle);
-		toRet.y = magnitude * Mathf.Sin(angle);
+		toRet.x = Magnitude * Mathf.Cos(Angle);
+		toRet.y = Magnitude * Mathf.Sin(Angle);
 		return toRet;
 	}
 

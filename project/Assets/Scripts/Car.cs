@@ -50,7 +50,7 @@ public class Car : MonoBehaviour
 				sequence.Add(wheels[i].Radius);
 			} else { // We don't have a wheel, blank values
 				sequence.Add(-1);
-				sequence.Add(0);
+				sequence.Add(0f);
 			}
 		}
 		return sequence;

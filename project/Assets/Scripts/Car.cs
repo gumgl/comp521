@@ -23,7 +23,12 @@ public class Car : MonoBehaviour
 
 		for (int i = 0; i < numVectors; i++) {
 			VectorP newV = new VectorP();
-			newV.angle = Random.Range(0f, Mathf.PI * 2);
+
+			if (i<4) // add one vector in each quadrant. otherwise the (0,0) is outside the car
+				newV.angle = Random.Range(Mathf.PI / 2 * i, Mathf.PI / 2 * (i+1));
+			else
+				newV.angle = Random.Range(0f, Mathf.PI * 2);
+
 			newV.magnitude = Random.Range(0f, MAX_MAGNITUDE);
 			corners.Add(newV);
 		}

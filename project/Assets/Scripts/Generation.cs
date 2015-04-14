@@ -10,12 +10,8 @@ using Random = UnityEngine.Random;
 class Generation
 {
 	public List<Car> candidates = new List<Car>();
-
-	private int currCarID;
-
-	public Car CurrCar {
-		get { return candidates[currCarID]; }
-	}
+	public List<Car> testing = new List<Car>();
+	public List<Car> tested = new List<Car>();
 
 	/// <summary>Initialize using preset chromosomes.</summary>
 	/// <param name="chromosomes">A List of chromosomes.</param>
@@ -32,7 +28,6 @@ class Generation
 
 	/// <summary>Initialize with a completely random population.</summary>
 	public void InitRandom() {
-		currCarID = 0;
 		while (candidates.Count < God.POOL_SIZE) {
 			Car car = (Car) GameObject.Instantiate(God.SingleTon.CarPrefab, Vector2.zero, Quaternion.identity);
 			car.position = new Vector2(0, God.MAX_VECTOR_MAGNITUDE * 2 + God.MAX_WHEEL_RADIUS);
@@ -44,32 +39,56 @@ class Generation
 	}
 
 	public void StartTest() {
-		currCarID = -1;
-		SpawnNextCandidate();
+		SpawnNextCandidates();
 	}
 
-	public void RemoveCurrCandidate() {
-		RemoveCandidate(currCarID);
+	public Car BestTestingCandidate() {
+		if (testing == null)
+			return null;
+
+		float score = 0;
+		Car best = null;
+		foreach (var car in testing) {
+			if (best == null || car.CalcFitness() > score) {
+				best = car;
+				score = car.CalcFitness();
+			}
+		}
+		return best;
 	}
 
-	private void RemoveCandidate(int i) {
-		candidates[i].Running = false;
+	public void TestCandidate(int i) {
+		var candidate = candidates[i];
+		candidates.RemoveAt(i);
+		testing.Add(candidate);
+		candidate.Running = true;
 	}
 
-	public Car SpawnNextCandidate() {
-		currCarID ++;
-		CurrCar.Running = true;
-		return CurrCar;
+	public void FinishCandidate(int i) {
+		var candidate = testing[i];
+		testing.RemoveAt(i);
+		tested.Add(candidate);
+		candidate.Running = false;
 	}
 
-	public bool HasNextCandidate() {
-		return currCarID < candidates.Count;
+	public void SpawnNextCandidates() {
+		while (candidates.Count > 0 && testing.Count < God.CONCURRENT_SIMULATIONS) {
+			TestCandidate(0);
+		}
+	}
+
+	public bool SimulationDone() {
+		return candidates.Count == 0 && testing.Count == 0;
+	}
+
+	public bool HasMoreCandidates() {
+		return candidates.Count > 0;
 	}
 
 	/// <summary>Apply evolutionary genetic algorithms to evolve the population based on their fitness score.</summary>
 	/// <returns>The evolved generation</returns>
 	public Generation Evolve() {
-		List<Car> matingPool = TournamentSelection(candidates, 2);
+		List<Car> matingPool = TournamentSelection(tested, 2);
 		//while (matingPool.Count < God.POOL_MATING_SIZE) {}
 		List<Car[]> couples = Mating(matingPool);
 
@@ -80,7 +99,7 @@ class Generation
 
 		chromosomes = Mutation(chromosomes);
 
-		foreach (var candidate in candidates) {
+		foreach (var candidate in tested) {
 			GameObject.Destroy(candidate.gameObject);
 		}
 

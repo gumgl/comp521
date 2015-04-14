@@ -11,9 +11,9 @@ public class God : MonoBehaviour {
 	public const float MAX_WHEEL_RADIUS = 1f;
 	public const float MOTOR_SPEED = -500;
 	/// <summary>If car is moving at less than this, it is considered idle.</summary>
-	public const float IDLE_MIN_SPEED = 0.1f;
-	public const float IDLE_MAX_TIME = 5;
-	public const int POOL_SIZE = 12;
+	public const float IDLE_MIN_SPEED = 0.2f;
+	public const float IDLE_MAX_TIME = 2.5f;
+	public const int POOL_SIZE = 6;
 	//public const int POOL_MATING_SIZE = 6;
 	public const float MUTATION_RATE = 0.05f;
 	public const float CONCURRENT_SIMULATIONS = 3;
@@ -47,7 +47,8 @@ public class God : MonoBehaviour {
 	}
 
 	void Update() {
-		float currScore = generation.CurrCar.CalcFitness();
+		var best = generation.BestTestingCandidate();
+		float currScore = best.CalcFitness();
 		if (currScore > bestScore)
 			bestScore = currScore;
 
@@ -55,23 +56,26 @@ public class God : MonoBehaviour {
 		BestScoreText.text = bestScore.ToString("0.0");
 		CameraFollowCar();
 
-		if (generation.CurrCar.HasStopped) {
-			Debug.Log("Car has stopped!");
-			generation.RemoveCurrCandidate();
-			if (generation.HasNextCandidate()) // Same generation
-				generation.SpawnNextCandidate();
-			else { // Next generation
-				generation = generation.Evolve();
-				genCount++;
-				generation.StartTest();
+		for (int i=0; i<generation.testing.Count; i++) {
+			if (generation.testing[i].HasStopped) {
+				Debug.Log("Car has stopped!");
+				generation.FinishCandidate(i);
+				if (generation.HasMoreCandidates())
+					generation.SpawnNextCandidates();
+				else {
+					generation = generation.Evolve();
+					genCount++;
+					generation.StartTest();
+				}
 			}
 		}
 	}
 
 	void CameraFollowCar() {
-		if (generation != null && generation.CurrCar != null) {
+		var best = generation.BestTestingCandidate();
+		if (best != null) {
 			var pos = camera.transform.position;
-			var target = generation.CurrCar.position + Vector2.up*2;
+			var target = best.position + Vector2.up*2;
 			pos.x = target.x;
 			pos.y = target.y;
 

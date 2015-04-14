@@ -62,6 +62,7 @@ public class Car : MonoBehaviour
 			var v = new VectorP();
 			v.Angle = (float) sequence[s++];
 			v.Magnitude = (float) sequence[s++];
+			corners.Add(v);
 		}
 		corners.Sort((v1, v2) => v1.Angle.CompareTo(v2.Angle));
 		CreateMesh();
@@ -216,7 +217,7 @@ public class Car : MonoBehaviour
 	public bool IsIdle {
 		get {
 			var val = (position - lastPosition).magnitude/Time.deltaTime;
-			Debug.Log("Moving by " + val.ToString());
+			//Debug.Log("Moving by " + val.ToString());
 			return val < God.IDLE_MIN_SPEED;
 		}
 	}

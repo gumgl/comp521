@@ -5,7 +5,7 @@ public class Wheel : MonoBehaviour
 {
 	private float density = 1f;
 	public Car car;
-	public float radius;
+	private float radius;
 	public float Radius
 	{
 		get { return radius; }
@@ -27,7 +27,6 @@ public class Wheel : MonoBehaviour
 			transform.localPosition = (Vector3) Corner.ToVector2();
 		}
 	}
-	//public VectorP corner;
 
 	public VectorP Corner {
 		get { return car.corners[CornerID]; }

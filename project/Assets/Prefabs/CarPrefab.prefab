@@ -27,7 +27,7 @@ GameObject:
   - 23: {fileID: 2373592}
   - 33: {fileID: 3306588}
   - 60: {fileID: 6065016}
-  - 50: {fileID: 5050182}
+  - 50: {fileID: 5000408}
   m_Layer: 8
   m_Name: Chassis
   m_TagString: Untagged
@@ -91,14 +91,14 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 195822}
   m_Mesh: {fileID: 0}
---- !u!50 &5050182
+--- !u!50 &5000408
 Rigidbody2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 195822}
   m_Mass: 1
-  m_LinearDrag: 0
+  m_LinearDrag: 3
   m_AngularDrag: .0500000007
   m_GravityScale: 1
   m_FixedAngle: 0
@@ -113,7 +113,7 @@ PolygonCollider2D:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 195822}
   m_Enabled: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 0cb77231a430b454fb792ff7ffcc3943, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_Offset: {x: 0, y: 0}
@@ -138,6 +138,8 @@ MonoBehaviour:
   wheelPrefab: {fileID: 11482478, guid: 09177547788720e4880ced53fbb0128c, type: 2}
   chassis: {fileID: 195822}
   wheels: []
+  lastPosition: {x: 0, y: 0}
+  idleTime: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

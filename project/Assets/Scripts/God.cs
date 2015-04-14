@@ -73,6 +73,11 @@ public class God : MonoBehaviour {
 		}
 
 		for (int i=0; i<generation.testing.Count; i++) {
+			if (generation.testing[i].IsIdle && generation.testing[i].idleTime > 0.2f)
+				generation.testing[i].chassis.GetComponent<Renderer>().material.color = Color.gray;
+			else
+				generation.testing[i].chassis.GetComponent<Renderer>().material.color = Color.yellow;
+
 			if (generation.testing[i].HasStopped) {
 				Debug.Log("Car has stopped!");
 				generation.FinishCandidate(i);

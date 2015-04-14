@@ -29,3 +29,12 @@ obj/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# =================== #
+# TeX generated files #
+# =================== #
+/doc/*.aux
+/doc/*.log
+/doc/*.synctex.gz
+/doc/*.toc
+/doc/*.out

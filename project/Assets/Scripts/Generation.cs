@@ -13,29 +13,33 @@ class Generation
 	public List<Car> testing = new List<Car>();
 	public List<Car> tested = new List<Car>();
 
+	public int numSubjects { get; private set; }
+
 	/// <summary>Initialize using preset chromosomes.</summary>
 	/// <param name="chromosomes">A List of chromosomes.</param>
 	public void InitChromosomes(List<ArrayList> chromosomes) {
 		foreach (var chromosome in chromosomes) {
 			Car car = (Car) GameObject.Instantiate(God.SingleTon.CarPrefab, Vector2.zero, Quaternion.identity);
-			car.position = new Vector2(0, God.MAX_VECTOR_MAGNITUDE * 2 + God.MAX_WHEEL_RADIUS);
+			car.position = new Vector2(0, -car.LowestPoint().y + God.MAX_WHEEL_RADIUS + 1);
 			car.InitChromosome(chromosome);
 			car.gameObject.SetActive(false);
 
 			candidates.Add(car);
 		}
+		numSubjects = candidates.Count;
 	}
 
 	/// <summary>Initialize with a completely random population.</summary>
 	public void InitRandom() {
 		while (candidates.Count < God.POOL_SIZE) {
 			Car car = (Car) GameObject.Instantiate(God.SingleTon.CarPrefab, Vector2.zero, Quaternion.identity);
-			car.position = new Vector2(0, God.MAX_VECTOR_MAGNITUDE * 2 + God.MAX_WHEEL_RADIUS);
+			car.position = new Vector2(0, -car.LowestPoint().y + God.MAX_WHEEL_RADIUS + 1);
 			car.InitRandom();
 			car.gameObject.SetActive(false);
 
 			candidates.Add(car);
 		}
+		numSubjects = candidates.Count;
 	}
 
 	public void StartTest() {
@@ -189,8 +193,7 @@ class Generation
 
 		for (int c = 0; c < copy.Count(); c++)
 			for (int i = 0; i < copy[c].Count; i++)
-				if (Random.Range(0f, 1f) < God.MUTATION_RATE) // Mutate
-					copy[c][i] = Car.ChromosomeRandomValue(i);
+				copy[c] = Car.ChromosomeMutate(copy[c]);
 
 		return copy;
 	}

@@ -1,23 +1,25 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Random = UnityEngine.Random;
 
 public class God : MonoBehaviour {
 	public const int NUM_VECTORS = 8;
 	public const int MIN_WHEELS = 1;
-	public const int MAX_WHEELS = 3;
-	public const float WHEEL_FREQUENCY = 0.5f;
+	public const int MAX_WHEELS = 8;
+	public const float WHEEL_FREQUENCY = 0.2f;
 	public const float MAX_VECTOR_MAGNITUDE = 2;
 	public const float MIN_WHEEL_RADIUS = 0.2f;
 	public const float MAX_WHEEL_RADIUS = 1f;
 	public const float MOTOR_SPEED = -800;
 	/// <summary>If car is moving at less than this, it is considered idle.</summary>
-	public const float IDLE_MIN_SPEED = 0.2f;
+	public const float IDLE_MIN_SPEED = 0.1f;
 	public const float IDLE_MAX_TIME = 2.5f;
-	public const int POOL_SIZE = 6;
+	public const int POOL_SIZE = 12;
 	//public const int POOL_MATING_SIZE = 6;
 	public const float MUTATION_RATE = 0.05f;
-	public const float CONCURRENT_SIMULATIONS = 3;
+	public const float CONCURRENT_SIMULATIONS = 5;
 	public const float TERRAIN_MAX_DELTA = 70;
 	public const float TERRAIN_MAX_SLOPE = 40;
 	public const float TERRAIN_SEGMENT_LENGTH = 1.7f;
@@ -29,6 +31,7 @@ public class God : MonoBehaviour {
 	public UnityEngine.UI.Text GenCountText;
 	public UnityEngine.UI.Text BestScoreText;
 	public UnityEngine.UI.Text CurrScoreText;
+	public UnityEngine.UI.Text TestingStateText;
 	public Camera camera;
 
 	private Generation generation;
@@ -61,6 +64,8 @@ public class God : MonoBehaviour {
 			float currScore = best.CalcFitness();
 			if (currScore > bestScore)
 				bestScore = currScore;
+
+			TestingStateText.text = String.Format("{0}/{1}", generation.tested.Count, generation.numSubjects);
 
 			CurrScoreText.text = currScore.ToString("0.0");
 			BestScoreText.text = bestScore.ToString("0.0");

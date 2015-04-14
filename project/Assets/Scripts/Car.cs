@@ -41,54 +41,63 @@ public class Car : MonoBehaviour
 	public ArrayList GetChromosome() {
 		var sequence = new ArrayList();
 		foreach (var corner in corners) {
-			sequence.Add(corner.Angle);
-			sequence.Add(corner.Magnitude);
+			sequence.Add((float) corner.Angle);
+			sequence.Add((float) corner.Magnitude);
 		}
 		for (int i = 0; i < God.MAX_WHEELS; i++) { // Make sure every chromosome is the same size
 			if (i < wheels.Count) { // We actually have a wheel
 				sequence.Add(wheels[i].CornerID);
 				sequence.Add(wheels[i].Radius);
 			} else { // We don't have a wheel, blank values
-				sequence.Add(-1);
-				sequence.Add(0f);
+				sequence.Add((int) -1);
+				sequence.Add((float) 0f);
 			}
 		}
+		Debug.Log("Created sequence of " + sequence.Count.ToString());
 		return sequence;
 	}
 
 	public void InitChromosome(ArrayList sequence) {
+		Debug.Log("Init with sequence of " + sequence.Count.ToString());
+		corners.Clear();
 		int s = 0;
 		for (int i = 0; i < God.NUM_VECTORS; i++) {
 			var v = new VectorP();
-			v.Angle = (float) sequence[s++];
-			v.Magnitude = (float) sequence[s++];
+			Debug.Log(sequence[s].ToString());
+			v.Angle = Convert.ToSingle(sequence[s++]);
+			v.Magnitude = Convert.ToSingle(sequence[s++]);
 			corners.Add(v);
 		}
 		corners.Sort((v1, v2) => v1.Angle.CompareTo(v2.Angle));
 		CreateMesh();
 		for (int i = 0; i < God.MAX_WHEELS; i++) {
-			int cornerID = (int) sequence[s++];
-			float radius = (float) sequence[s++];
+			int cornerID = Convert.ToInt32(sequence[s++]);
+			float radius = Convert.ToSingle(sequence[s++]);
 			if (cornerID != -1) // We actually have a wheel
 				AddWheel(cornerID, radius);
 		}
 		Running = false;
 	}
+
 	/// <summary>Mutates a single variable in a chromosome.</summary>
 	/// <param name="k">The position in the chromosome.</param>
 	/// <returns>The new random value</returns>
-	public static object ChromosomeRandomValue(int k) {
-		if (k * 2 < God.NUM_VECTORS) // Corners
-			if (k%2 == 0)
-				return Random.Range(0f, 2*Mathf.PI);
-			else
-				return Random.Range(0f, God.MAX_VECTOR_MAGNITUDE);
-		else // Wheels
-			if (k % 2 == 0)
-				return Random.Range(-1, God.NUM_VECTORS);
-			else
-				return Random.Range(God.MIN_WHEEL_RADIUS, God.MAX_WHEEL_RADIUS);
-
+	public static ArrayList ChromosomeMutate(ArrayList sequence) {
+		for (int k = 0; k < sequence.Count; k++) {
+			if (Random.Range(0f, 1f) < God.MUTATION_RATE) {
+				if (k*2 < God.NUM_VECTORS) // Corners
+					if (k%2 == 0)
+						sequence[k] = (float) Random.Range(0f, 2*Mathf.PI);
+					else
+						sequence[k] = (float) Random.Range(0f, God.MAX_VECTOR_MAGNITUDE);
+				else // Wheels
+					if (k%2 == 0)
+						sequence[k] = (int) Random.Range(-1, God.NUM_VECTORS);
+					else
+						sequence[k] = (float) Random.Range(God.MIN_WHEEL_RADIUS, God.MAX_WHEEL_RADIUS);
+			}
+		}
+		return sequence;
 	}
 
 	public void InitRandom() {
@@ -172,8 +181,8 @@ public class Car : MonoBehaviour
 		var motor = joint.motor;
 		var suspension = joint.suspension;
 		motor.motorSpeed = God.MOTOR_SPEED;
-		suspension.dampingRatio = 0.9f;
-		suspension.frequency = 0.5f;
+		suspension.dampingRatio = 1f;
+		suspension.frequency = 0f;
 
 		joint.motor = motor;
 		joint.useMotor = true;
@@ -216,14 +225,24 @@ public class Car : MonoBehaviour
 
 	public bool IsIdle {
 		get {
-			var val = (position - lastPosition).magnitude/Time.deltaTime;
+			var delta = (position - lastPosition);
 			//Debug.Log("Moving by " + val.ToString());
-			return val < God.IDLE_MIN_SPEED;
+			return delta.magnitude < God.IDLE_MIN_SPEED * Time.deltaTime // Static
+				|| (position - lastPosition).x < -0.5f * Time.deltaTime // Going backwards
+				|| (position - lastPosition).y < -6f * Time.deltaTime; // Falling
 		}
 	}
 
 	public bool HasStopped {
 		get { return idleTime > God.IDLE_MAX_TIME; }
+	}
+
+	public Vector2 LowestPoint() {
+		Vector2 lowest = Vector2.zero;
+		foreach (var vectorP in corners)
+			if (vectorP.ToVector2().y < lowest.y)
+				lowest = vectorP.ToVector2();
+		return lowest;
 	}
 	
 	void Start ()
@@ -239,9 +258,9 @@ public class Car : MonoBehaviour
 			else
 				idleTime = 0;
 		}
-		lastPosition = position;
 	}
 
 	void LateUpdate() {
+		lastPosition = position;
 	}
 }

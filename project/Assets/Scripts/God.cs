@@ -16,14 +16,14 @@ public class God : MonoBehaviour {
 	/// <summary>If car is moving at less than this, it is considered idle.</summary>
 	public const float IDLE_MIN_SPEED = 0.1f;
 	public const float IDLE_MAX_TIME = 2.5f;
-	public const int POOL_SIZE = 12;
+	public const int POOL_SIZE = 20;
 	//public const int POOL_MATING_SIZE = 6;
-	public const float MUTATION_RATE = 0.05f;
-	public const float CONCURRENT_SIMULATIONS = 5;
-	public const float TERRAIN_MAX_DELTA = 70;
-	public const float TERRAIN_MAX_SLOPE = 40;
-	public const float TERRAIN_SEGMENT_LENGTH = 1.7f;
-	public const int TERRAIN_EASY_SEGMENTS = 40;
+	public const float MUTATION_RATE = 0.03f;
+	public const float CONCURRENT_SIMULATIONS = 8;
+	public const float TERRAIN_MAX_DELTA = 100;
+	public const float TERRAIN_MAX_SLOPE = 45;
+	public const float TERRAIN_SEGMENT_LENGTH = 2.3f;
+	public const int TERRAIN_EASY_SEGMENTS = 50;
 
 	public static God SingleTon = null;
 	public Car CarPrefab;

@@ -1,0 +1,17 @@
+\begin{thebibliography}{1}
+
+\bibitem{Geijtenbeek2013}
+Thomas Geijtenbeek, Michiel van~de Panne, and A.~Frank van~der Stappen.
+\newblock Flexible muscle-based locomotion for bipedal creatures.
+\newblock {\em ACM Transactions on Graphics}, 32(6), 2013.
+
+\bibitem{MIM}
+Insop~Song Mehrdad~Dianati and Mark Treiber.
+\newblock An introduction to genetic algorithms and evolution strategies.
+
+\bibitem{miller1995genetic}
+Brad~L Miller and David~E Goldberg.
+\newblock Genetic algorithms, tournament selection, and the effects of noise.
+\newblock {\em Complex Systems}, 9(3):193--212, 1995.
+
+\end{thebibliography}

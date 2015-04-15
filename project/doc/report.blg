@@ -1,0 +1,10 @@
+This is BibTeX, Version 0.99dThe top-level auxiliary file: report.aux
+The style file: plain.bst
+Database file #1: report.bib
+Name 1 in "Mehrdad Dianati, Insop Song, and Mark Treiber" has a comma at the end for entry MIM
+while executing---line 1049 of file plain.bst
+Name 1 in "Mehrdad Dianati, Insop Song, and Mark Treiber" has a comma at the end for entry MIM
+while executing---line 1090 of file plain.bst
+Warning--empty journal in MIM
+Warning--empty year in MIM
+(There were 2 error messages)

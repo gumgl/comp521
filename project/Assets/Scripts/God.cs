@@ -39,9 +39,9 @@ public class God : MonoBehaviour {
 	private List<GameObject> groundPieces = new List<GameObject>();
 
 	private int genCount;
-	private int GenCount {
+	public int GenCount {
 		get { return genCount; }
-		set {
+		private set {
 			genCount = value;
 			GenCountText.text = value.ToString();
 		}
@@ -50,6 +50,8 @@ public class God : MonoBehaviour {
 	void Start () {
 		SingleTon = this;
 		GenCount = 1;
+
+		FileLogger.Instance.Open("stats.txt", false);
 
 		BuildTerrain();
 

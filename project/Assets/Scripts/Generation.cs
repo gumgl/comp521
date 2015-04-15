@@ -43,6 +43,7 @@ class Generation
 	}
 
 	public void StartTest() {
+		FileLogger.Instance.Log("==Generation "+ God.SingleTon.GenCount + "==");
 		SpawnNextCandidates();
 	}
 
@@ -70,6 +71,7 @@ class Generation
 
 	public void FinishCandidate(int i) {
 		var candidate = testing[i];
+		FileLogger.Instance.Log(candidate.CalcFitness().ToString());
 		testing.RemoveAt(i);
 		tested.Add(candidate);
 		candidate.Running = false;
